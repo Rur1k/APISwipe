@@ -1,0 +1,10 @@
+Django~=2.2.4
+django-rest-framework
+djangorestframework
+markdown
+django-filter
+psycopg2-binary
+PyJWT
+djoser
+djangorestframework_simplejwt~=4.3.0
+python-dotenv
