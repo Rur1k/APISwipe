@@ -8,24 +8,22 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, email, phone, password=None):
+    def create_user(self, username, email, password=None):
         if username is None:
             raise TypeError('Имя пользователя - не может быть пустым')
         if email is None:
             raise TypeError('Email -  не может быть пустым')
-        if phone is None:
-            raise TypeError('Email -  не может быть пустым')
 
-        user = self.model(username=username, email=self.normalize_email(email), phone=phone)
+        user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, username, email, phone, password):
+    def create_superuser(self, username, email, password):
         if password is None:
             raise TypeError('Пароль - не может быть пустым')
 
-        user = self.create_user(username, email, phone, password)
+        user = self.create_user(username, email, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -36,7 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True)
-    phone = models.CharField(db_index=True, max_length=16, unique=True)
+    phone = models.CharField(max_length=16, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_blacklist = models.BooleanField(default=False)
