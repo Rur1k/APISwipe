@@ -1,28 +1,42 @@
-from rest_framework import status
-from rest_framework.generics import RetrieveUpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from .serializers import HouseCreateSerializer, HouseListSerializer
-from .renderers import HouseJSONRenderer
-from .models import House
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
-class HouseListAPIView(APIView):
-    def get(self, request):
-        houses = House.objects.all()
-        serializer = HouseListSerializer(houses, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+from .serializers import (HouseCreateSerializer, HouseSerializer,
+                          NotaryCreateSerializer, NotarySerializer,)
+from .models import House, Notary
 
-class HouseCreateAPIView(APIView):
-    permission_classes = (IsAuthenticated, )
+
+class HouseCreateAPIView(CreateAPIView):
+    permission_classes = (IsAdminUser, )
     serializer_class = HouseCreateSerializer
 
-    def post(self, request):
-        house = request.data.get('house', {})
-        serializer = self.serializer_class(data=house)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+class HouseListAPIView(ListAPIView):
+    queryset = House.objects.all()
+    permission_classes = (IsAdminUser,)
+    serializer_class = HouseSerializer
+
+
+class HouseAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = House.objects.filter()
+    permission_classes = (IsAdminUser,)
+    serializer_class = HouseSerializer
+
+
+class NotaryCreateAPIView(CreateAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = NotaryCreateSerializer
+
+
+class NotaryListAPIView(ListAPIView):
+    queryset = Notary.objects.all()
+    permission_classes = (IsAdminUser,)
+    serializer_class = NotarySerializer
+
+
+class NotaryAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Notary.objects.filter()
+    permission_classes = (IsAdminUser,)
+    serializer_class = NotarySerializer
+

@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
-from .models import House
+from .models import House, Notary
 
 
-class HouseListSerializer(serializers.ModelSerializer):
+class HouseSerializer(serializers.ModelSerializer):
     class Meta:
         model = House
         fields = [
+            'id',
             'name',
             'district',
             'microdistrict',
@@ -78,3 +79,29 @@ class HouseCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return House.objects.create(**validated_data)
+
+
+class NotaryCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notary
+        fields = [
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+        ]
+
+    def create(self, validated_data):
+        return Notary.objects.create(**validated_data)
+
+
+class NotarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notary
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+        ]
