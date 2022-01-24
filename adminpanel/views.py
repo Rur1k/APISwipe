@@ -3,8 +3,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
 from .serializers import (HouseCreateSerializer, HouseSerializer,
-                          NotaryCreateSerializer, NotarySerializer,)
-from .models import House, Notary
+                          NotaryCreateSerializer, NotarySerializer,
+                          FlatCreateSerializer, FlatSerializer)
+from .models import House, Notary, Flat
 
 
 class HouseCreateAPIView(CreateAPIView):
@@ -39,4 +40,21 @@ class NotaryAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Notary.objects.filter()
     permission_classes = (IsAdminUser,)
     serializer_class = NotarySerializer
+
+
+class FlatCreateAPIView(CreateAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = FlatCreateSerializer
+
+
+class FlatListAPIView(ListAPIView):
+    queryset = Flat.objects.all()
+    permission_classes = (IsAdminUser,)
+    serializer_class = FlatSerializer
+
+
+class FlatAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Flat.objects.filter()
+    permission_classes = (IsAdminUser,)
+    serializer_class = FlatSerializer
 

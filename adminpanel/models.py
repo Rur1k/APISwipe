@@ -35,7 +35,7 @@ class House(models.Model):
     risers = models.IntegerField(null=True, blank=True)
 
 
-class FLat(models.Model):
+class Flat(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     number = models.IntegerField(null=True, blank=True)
     house = models.ForeignKey(House, on_delete=models.CASCADE)
@@ -54,3 +54,5 @@ class Notary(models.Model):
     last_name = models.CharField(max_length=64, null=True, blank=True)
     phone = models.CharField(max_length=16, null=True, blank=True)
     email = models.CharField(max_length=64, null=True, blank=True)
+
+

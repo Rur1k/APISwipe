@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import House, Notary
+from .models import House, Notary, Flat
 
 
 class HouseSerializer(serializers.ModelSerializer):
@@ -104,4 +104,39 @@ class NotarySerializer(serializers.ModelSerializer):
             'last_name',
             'phone',
             'email',
+        ]
+
+
+class FlatCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flat
+        fields = [
+            'number',
+            'house',
+            'count_room',
+            'square',
+            'price_per_meter',
+            'house_building',
+            'section',
+            'floor',
+            'riser',
+        ]
+
+    def create(self, validated_data):
+        return Flat.objects.create(**validated_data)
+
+
+class FlatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flat
+        fields = [
+            'number',
+            'house',
+            'count_room',
+            'square',
+            'price_per_meter',
+            'house_building',
+            'section',
+            'floor',
+            'riser',
         ]
