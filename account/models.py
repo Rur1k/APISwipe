@@ -31,15 +31,23 @@ class UserManager(BaseUserManager):
         return user
 
 
+class UserRole(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    name = models.CharField(max_length=128)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)
     email = models.EmailField(db_index=True, unique=True)
     phone = models.CharField(max_length=16, null=True, blank=True)
+    first_name = models.CharField(max_length=64, null=True, blank=True)
+    last_name = models.CharField(max_length=64, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_blacklist = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    role = models.ForeignKey(UserRole, on_delete=models.CASCADE, default=1)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

@@ -2,6 +2,9 @@ from rest_framework import serializers
 
 from .models import House, Notary, Flat
 
+from account.models import User
+
+
 
 class HouseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,6 +126,19 @@ class FlatCreateSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        errors = []
+        if validated_data['house_building'] > validated_data['house'].house_buildings:
+            errors.append('В выбраном доме нет указанного корпуса')
+        if validated_data['section'] > validated_data['house'].sections:
+            errors.append('В выбраном доме нет указанной секции')
+        if validated_data['floor'] > validated_data['house'].floors:
+            errors.append('В выбраном доме нет указанного этажа')
+        if validated_data['riser'] > validated_data['house'].risers:
+            errors.append('В выбраном доме нет указанного стояка')
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
         return Flat.objects.create(**validated_data)
 
 
@@ -139,4 +155,18 @@ class FlatSerializer(serializers.ModelSerializer):
             'section',
             'floor',
             'riser',
+        ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'pk',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'role',
+            'is_blacklist',
         ]
