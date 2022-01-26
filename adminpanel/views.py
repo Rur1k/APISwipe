@@ -9,7 +9,7 @@ from .serializers import *
 
 from .permissions import IsBuilder
 
-from .models import House, Notary, Flat
+from .models import House, Notary, Flat, Announcement
 from account.models import User
 
 '''АДМИНСКИЕ ПРЕДСТАВЛЕНИЯ'''
@@ -40,7 +40,7 @@ class NotaryCreateAPIView(generics.CreateAPIView):
 
 class NotaryListAPIView(generics.ListAPIView):
     queryset = Notary.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = (IsAuthenticated, )
     serializer_class = NotarySerializer
 
 
@@ -130,4 +130,48 @@ class BuilderHouseCreateAPIView(generics.CreateAPIView):
     serializer_class = HouseCreateSerializer
 
 
+'''ПРЕДСТАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯ'''
 
+
+class AnnouncementCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AnnouncementCreateSerializer
+
+
+class AnnouncementListAPIView(generics.ListAPIView):
+    queryset = Announcement.objects.filter(pub_status=True)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AnnouncementSerializer
+
+
+class AnnouncementUserListAPIView(generics.ListAPIView):
+    queryset = Announcement.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AnnouncementSerializer
+
+    def get_queryset(self):
+        queryset = Announcement.objects.none()
+        user = self.request.user
+        if user:
+            queryset = self.queryset.filter(user=user)
+        return queryset
+
+
+class AnnouncementUserAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Announcement.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AnnouncementSerializer
+    http_method_names = ['get', 'patch', 'delete']
+
+    def get_queryset(self):
+        queryset = Announcement.objects.none()
+        user = self.request.user
+        if user:
+            queryset = self.queryset.filter(user=user)
+        return queryset
+
+
+class AnnouncementDetailAPIView(generics.RetrieveAPIView):
+    queryset = Announcement.objects.filter()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AnnouncementSerializer

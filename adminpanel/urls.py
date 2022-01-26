@@ -25,4 +25,13 @@ urlpatterns = [
     path('builder/house/list/', BuilderHouseListAPIView.as_view()),
     path('builder/house/create/', BuilderHouseCreateAPIView.as_view()),
     path('builder/house/<int:pk>', BuilderHouseAPIView.as_view()),
+
+    # Для пользователя
+    path('announcement/create/', AnnouncementCreateAPIView.as_view()),
+    path('announcement/list/', AnnouncementListAPIView.as_view()),
+    path('announcement/my/list/', AnnouncementUserListAPIView.as_view()),
+    path('announcement/my/<int:pk>', AnnouncementUserAPIView.as_view()),
+    path('announcement/<int:pk>', AnnouncementDetailAPIView.as_view()),
+    path('announcement/<int:pk>', AnnouncementDetailAPIView.as_view()),
+    path('notary/list/', NotaryListAPIView.as_view()),
 ]
