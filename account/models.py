@@ -55,7 +55,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        full_name = f'{self.first_name} {self.last_name}'
+        return full_name
 
     @property
     def token(self):

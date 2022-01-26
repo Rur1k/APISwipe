@@ -1,5 +1,7 @@
 from django.db import models
 
+from account.models import User
+
 
 class House(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
@@ -33,6 +35,10 @@ class House(models.Model):
     sections = models.IntegerField(null=True, blank=True)
     floors = models.IntegerField(null=True, blank=True)
     risers = models.IntegerField(null=True, blank=True)
+    builder = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Flat(models.Model):
@@ -54,5 +60,26 @@ class Notary(models.Model):
     last_name = models.CharField(max_length=64, null=True, blank=True)
     phone = models.CharField(max_length=16, null=True, blank=True)
     email = models.CharField(max_length=64, null=True, blank=True)
+
+
+class Announcement(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    house = models.ForeignKey(House, on_delete=models.CASCADE, null=True, blank=True)
+    founding_documents = models.CharField(max_length=64, null=True, blank=True)
+    purpose = models.CharField(max_length=64, null=True, blank=True)
+    count_rooms = models.CharField(max_length=64, null=True, blank=True)
+    layout = models.CharField(max_length=64, null=True, blank=True)
+    residential_condition = models.CharField(max_length=64, null=True, blank=True)
+    all_square = models.CharField(max_length=64, null=True, blank=True)
+    balcony = models.CharField(max_length=64, null=True, blank=True)
+    heating_type = models.CharField(max_length=64, null=True, blank=True)
+    commission_to_agent = models.CharField(max_length=64, null=True, blank=True)
+    connection_type = models.CharField(max_length=64, null=True, blank=True)
+    description = models.CharField(max_length=64, null=True, blank=True)
+    price = models.CharField(max_length=64, null=True, blank=True)
+    calculation_option = models.CharField(max_length=64, null=True, blank=True)
+    maps = models.CharField(max_length=64, null=True, blank=True)
+    pub_status = models.CharField(max_length=64, null=True, blank=True)
 
 

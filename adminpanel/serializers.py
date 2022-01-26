@@ -5,82 +5,42 @@ from .models import House, Notary, Flat
 from account.models import User
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'pk',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'role',
+            'is_blacklist',
+        ]
+
 
 class HouseSerializer(serializers.ModelSerializer):
+    builder = serializers.StringRelatedField()
+
     class Meta:
         model = House
-        fields = [
-            'id',
-            'name',
-            'district',
-            'microdistrict',
-            'street',
-            'number',
-            'description',
-            'lcd_status',
-            'type_house',
-            'class_house',
-            'technologies',
-            'to_sea',
-            'payments',
-            'ceiling_height',
-            'gas',
-            'heating',
-            'sewerage',
-            'sales_dep_fullname',
-            'sales_dep_phone',
-            'sales_dep_email',
-            'registration',
-            'calculation_options',
-            'appointment',
-            'sum_in_contract',
-            'state',
-            'territory',
-            'maps',
-            'house_buildings',
-            'sections',
-            'floors',
-            'risers',
-        ]
+        fields = '__all__'
 
 
 class HouseCreateSerializer(serializers.ModelSerializer):
+    builder = serializers.StringRelatedField()
+
     class Meta:
         model = House
-        fields = [
-            'name',
-            'district',
-            'microdistrict',
-            'street',
-            'number',
-            'description',
-            'lcd_status',
-            'type_house',
-            'class_house',
-            'technologies',
-            'to_sea',
-            'payments',
-            'ceiling_height',
-            'gas',
-            'heating',
-            'sewerage',
-            'sales_dep_fullname',
-            'sales_dep_phone',
-            'sales_dep_email',
-            'registration',
-            'calculation_options',
-            'appointment',
-            'sum_in_contract',
-            'state',
-            'territory',
-            'maps',
-            'house_buildings',
-            'sections',
-            'floors',
-            'risers',
-        ]
+        fields = '__all__'
 
     def create(self, validated_data):
+        user = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+            if user.role.id == 2:
+                validated_data['builder'] = user
         return House.objects.create(**validated_data)
 
 
@@ -157,16 +117,3 @@ class FlatSerializer(serializers.ModelSerializer):
             'riser',
         ]
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'pk',
-            'first_name',
-            'last_name',
-            'email',
-            'phone',
-            'role',
-            'is_blacklist',
-        ]
