@@ -9,10 +9,21 @@ class UserSerializer(serializers.ModelSerializer):
         min_length=8,
         write_only=True
     )
+    role = serializers.StringRelatedField()
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password')
+        fields = [
+            'pk',
+            'username',
+            'email',
+            'phone',
+            'first_name',
+            'last_name',
+            'is_blacklist',
+            'role',
+            'password',
+        ]
 
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
@@ -22,7 +33,6 @@ class UserSerializer(serializers.ModelSerializer):
 
         if password is not None:
             instance.set_password(password)
-
         instance.save()
 
         return instance

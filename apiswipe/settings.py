@@ -166,6 +166,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'SWIPE API',
     'DESCRIPTION': 'Описание',
     'VERSION': '1.0.0',
+    'SCHEMA_PATH_PREFIX': r'/api/',
 }
 
 

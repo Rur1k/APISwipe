@@ -35,6 +35,9 @@ class UserRole(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(db_index=True, max_length=255, unique=True)

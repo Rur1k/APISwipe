@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     # Дома
-    path('admin/house/', HouseViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('admin/house/', HouseViewSet.as_view({'get': 'list', 'post': 'create'}, name='AdminHouse')),
     path('admin/house/<int:pk>', HouseViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Квартиры
     path('admin/flat/', FlatViewSet.as_view({'get': 'list', 'post': 'create'})),
