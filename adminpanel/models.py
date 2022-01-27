@@ -83,3 +83,18 @@ class Announcement(models.Model):
     pub_status = models.BooleanField(default=False, null=True, blank=True)
 
 
+class UserFilter(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    name_filter = models.CharField(max_length=64, null=True, blank=True)
+    state_house = models.CharField(max_length=64, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    district = models.CharField(max_length=64, null=True, blank=True)
+    microdistrict = models.CharField(max_length=64, null=True, blank=True)
+    count_rooms = models.CharField(max_length=64, null=True, blank=True)
+    price_first = models.FloatField(null=True, blank=True)
+    price_last = models.FloatField(null=True, blank=True)
+    square_first = models.FloatField(null=True, blank=True)
+    square_last = models.FloatField(null=True, blank=True)
+    purpose = models.CharField(max_length=64, null=True, blank=True)
+    calculation_option = models.CharField(max_length=64, null=True, blank=True)
+    residential_condition = models.CharField(max_length=64, null=True, blank=True)
