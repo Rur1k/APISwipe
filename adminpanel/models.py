@@ -5,7 +5,7 @@ from account.models import User
 
 class House(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64, unique=True, blank=True)
     district = models.CharField(max_length=64, null=True, blank=True)
     microdistrict = models.CharField(max_length=64, null=True, blank=True)
     street = models.CharField(max_length=64, null=True, blank=True)

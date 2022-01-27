@@ -9,3 +9,4 @@ djoser
 djangorestframework_simplejwt~=4.3.0
 python-dotenv
 drf-spectacular
+drf-psq

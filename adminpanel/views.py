@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from .serializers import *
 
@@ -15,77 +16,39 @@ from account.models import User
 '''АДМИНСКИЕ ПРЕДСТАВЛЕНИЯ'''
 
 
-class HouseCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = HouseCreateSerializer
-
-
-class HouseListAPIView(generics.ListAPIView):
+class HouseViewSet(ModelViewSet):
     queryset = House.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
     serializer_class = HouseSerializer
-
-
-class HouseAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = House.objects.filter()
     permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = HouseSerializer
-    http_method_names = ['get', 'patch', 'delete']
 
 
-class NotaryCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = NotaryCreateSerializer
-
-
-class NotaryListAPIView(generics.ListAPIView):
+class NotaryViewSet(ModelViewSet):
     queryset = Notary.objects.all()
     permission_classes = (IsAuthenticated, )
     serializer_class = NotarySerializer
 
 
-class NotaryAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Notary.objects.filter()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = NotarySerializer
-    http_method_names = ['get', 'patch', 'delete']
-
-
-class FlatCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = FlatCreateSerializer
-
-
-class FlatListAPIView(generics.ListAPIView):
+class FlatViewSet(ModelViewSet):
     queryset = Flat.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     serializer_class = FlatSerializer
 
 
-class FlatAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Flat.objects.filter()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = FlatSerializer
-    http_method_names = ['get', 'patch', 'delete']
-
-
-class UserListAPIView(generics.ListAPIView):
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     serializer_class = UserSerializer
 
 
-class BlacklistAPIView(generics.ListAPIView):
-    queryset = User.objects.filter(is_blacklist=True)
-    permission_classes = (IsAuthenticated, IsAdminUser,)
-    serializer_class = UserSerializer
-
-
-class BlacklistSwitchAPIView(generics.UpdateAPIView):
+class BlacklistViewSet(ModelViewSet):
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated, IsAdminUser,)
     serializer_class = UserSerializer
-    http_method_names = ['patch']
+
+    def list(self, request, *args, **kwargs):
+        queryset = User.objects.filter(is_blacklist=True)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -94,28 +57,17 @@ class BlacklistSwitchAPIView(generics.UpdateAPIView):
         else:
             instance.is_blacklist = True
         instance.save()
-
-        return Response(status=status.HTTP_200_OK)
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 '''ПРЕДСТАВЛЕНИЯ СТРОИТЕЛЯ'''
 
 
-class BuilderHouseListAPIView(APIView):
-    permission_classes = (IsAuthenticated, IsBuilder,)
-    serializer_class = HouseSerializer
-
-    def get(self, request):
-        houses_in_builder = House.objects.filter(builder=request.user)
-        serializer = self.serializer_class(houses_in_builder, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class BuilderHouseAPIView(generics.RetrieveUpdateDestroyAPIView):
+class BuilderViewSet(ModelViewSet):
     queryset = House.objects.all()
     permission_classes = (IsAuthenticated, IsBuilder,)
     serializer_class = HouseSerializer
-    http_method_names = ['get', 'patch', 'delete']
 
     def get_queryset(self):
         queryset = House.objects.none()
@@ -124,27 +76,33 @@ class BuilderHouseAPIView(generics.RetrieveUpdateDestroyAPIView):
             queryset = self.queryset.filter(builder=user)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-class BuilderHouseCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsBuilder,)
-    serializer_class = HouseCreateSerializer
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 
 '''ПРЕДСТАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯ'''
 
 
-class AnnouncementCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = AnnouncementCreateSerializer
-
-
-class AnnouncementListAPIView(generics.ListAPIView):
+class AnnouncementViewSet(ModelViewSet):
     queryset = Announcement.objects.filter(pub_status=True)
     permission_classes = (IsAuthenticated,)
     serializer_class = AnnouncementSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-class AnnouncementUserListAPIView(generics.ListAPIView):
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AnnouncementUserViewSet(ModelViewSet):
     queryset = Announcement.objects.all()
     permission_classes = (IsAuthenticated,)
     serializer_class = AnnouncementSerializer
@@ -156,22 +114,9 @@ class AnnouncementUserListAPIView(generics.ListAPIView):
             queryset = self.queryset.filter(user=user)
         return queryset
 
-
-class AnnouncementUserAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Announcement.objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = AnnouncementSerializer
-    http_method_names = ['get', 'patch', 'delete']
-
-    def get_queryset(self):
-        queryset = Announcement.objects.none()
-        user = self.request.user
-        if user:
-            queryset = self.queryset.filter(user=user)
-        return queryset
-
-
-class AnnouncementDetailAPIView(generics.RetrieveAPIView):
-    queryset = Announcement.objects.filter()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = AnnouncementSerializer
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.pub_status = False
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
