@@ -4,25 +4,24 @@ from .views import *
 
 urlpatterns = [
     # Дома
-    path('admin/house/', HouseViewSet.as_view({'get': 'list', 'post': 'create'}, name='AdminHouse')),
-    path('admin/house/<int:pk>', HouseViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
+    path('house/', HouseViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('house/<int:pk>', HouseViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Квартиры
-    path('admin/flat/', FlatViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('admin/flat/<int:pk>', FlatViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
+    path('flat/', FlatViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('flat/<int:pk>', FlatViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Нотариусы
-    path('admin/notary/', NotaryViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('admin/notary/<int:pk>', NotaryViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
+    path('notary/', NotaryViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('notary/<int:pk>', NotaryViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Пользователи
-    path('admin/users/', UserViewSet.as_view({'get': 'list'})),
-    # Blacklist
-    path('admin/blacklist/', BlacklistViewSet.as_view({'get': 'list'})),
-    path('admin/blacklist/<int:pk>', BlacklistViewSet.as_view({'patch': 'update'})),
+    path('users/', UserViewSet.as_view({'get': 'list'})),
+    path('users/blacklist/', BlacklistViewSet.as_view({'get': 'list'})),
+    path('users/blacklist/<int:pk>', BlacklistViewSet.as_view({'patch': 'update'})),
     # Дома застройщика
     path('builder/house/', BuilderViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('builder/house/<int:pk>', BuilderViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Объявления общие
     path('announcement/', AnnouncementViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('announcement/<int:pk>', AnnouncementViewSet.as_view({'get': 'retrieve'})),
+    path('announcement/<int:pk>', AnnouncementViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Объявления пользователя
     path('announcement/my/', AnnouncementUserViewSet.as_view({'get': 'list'})),
     path('announcement/my/<int:pk>', AnnouncementUserViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),

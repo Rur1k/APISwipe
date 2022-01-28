@@ -44,7 +44,7 @@ class House(models.Model):
 class Flat(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     number = models.IntegerField(null=True, blank=True)
-    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    house = models.ForeignKey(House, on_delete=models.CASCADE, null=True, blank=True)
     count_room = models.IntegerField(null=True, blank=True)
     square = models.FloatField(null=True, blank=True)
     price_per_meter = models.FloatField(null=True, blank=True)
@@ -52,6 +52,7 @@ class Flat(models.Model):
     section = models.IntegerField(null=True, blank=True)
     floor = models.IntegerField(null=True, blank=True)
     riser = models.IntegerField(null=True, blank=True)
+    creater = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Notary(models.Model):

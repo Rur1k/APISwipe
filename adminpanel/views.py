@@ -1,49 +1,70 @@
 from django.forms import model_to_dict
 from rest_framework import status
-from rest_framework import generics
-from rest_framework import serializers
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from drf_psq import PsqMixin, Rule, psq
+
 from .serializers import *
-
-from .permissions import IsBuilder
-
+from .permissions import IsBuilder, IsCreaterFlat
 from .models import House, Notary, Flat, Announcement, UserFilter
 from account.models import User
 
 '''АДМИНСКИЕ ПРЕДСТАВЛЕНИЯ'''
 
 
-class HouseViewSet(ModelViewSet):
+class HouseViewSet(PsqMixin, ModelViewSet):
     queryset = House.objects.all()
     serializer_class = HouseSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = [IsAdminUser]
+
+    psq_rules = {
+        ('list', 'retrieve'): [
+            Rule([IsAuthenticated], serializer_class),
+        ]
+    }
 
 
-class NotaryViewSet(ModelViewSet):
+class NotaryViewSet(PsqMixin, ModelViewSet):
     queryset = Notary.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = [IsAdminUser]
     serializer_class = NotarySerializer
 
+    psq_rules = {
+        ('list', 'retrieve'): [
+            Rule([IsAuthenticated], serializer_class),
+        ]
+    }
 
-class FlatViewSet(ModelViewSet):
+
+class FlatViewSet(PsqMixin, ModelViewSet):
     queryset = Flat.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
     serializer_class = FlatSerializer
 
+    psq_rules = {
+        'create': [Rule([IsAdminUser]), Rule([IsBuilder])],
+        ('update', 'destroy'): [
+            Rule([IsAdminUser]),
+            Rule([IsCreaterFlat], get_obj=lambda self, obj: obj),
+        ],
+        ('list', 'retrieve'): [
+            Rule([IsBuilder], serializer_class, lambda self:self.queryset.filter(creater=self.request.user)),
+            Rule([IsAuthenticated]),
+        ],
+    }
 
-class UserViewSet(ModelViewSet):
+
+class UserViewSet(PsqMixin, ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
 
 
-class BlacklistViewSet(ModelViewSet):
+class BlacklistViewSet(PsqMixin, ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser,)
+    permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
 
     def list(self, request, *args, **kwargs):
@@ -65,15 +86,22 @@ class BlacklistViewSet(ModelViewSet):
 '''ПРЕДСТАВЛЕНИЯ СТРОИТЕЛЯ'''
 
 
-class BuilderViewSet(ModelViewSet):
+class BuilderViewSet(PsqMixin, ModelViewSet):
     queryset = House.objects.all()
-    permission_classes = (IsAuthenticated, IsBuilder,)
+    permission_classes = [IsAdminUser]
     serializer_class = HouseSerializer
+
+    psq_rules = {
+        ('list', 'create', 'retrieve', 'update', 'destroy'): [
+            Rule([IsAdminUser], serializer_class),
+            Rule([IsBuilder], serializer_class),
+        ]
+    }
 
     def get_queryset(self):
         queryset = House.objects.none()
         user = self.request.user
-        if user.role.id == 2:
+        if user:
             queryset = self.queryset.filter(builder=user)
         return queryset
 
@@ -85,14 +113,12 @@ class BuilderViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
-
 '''ПРЕДСТАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯ'''
 
 
-class AnnouncementViewSet(ModelViewSet):
+class AnnouncementViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.filter(pub_status=True)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     serializer_class = AnnouncementSerializer
 
     def create(self, request, *args, **kwargs):
@@ -103,9 +129,9 @@ class AnnouncementViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class AnnouncementUserViewSet(ModelViewSet):
+class AnnouncementUserViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     serializer_class = AnnouncementSerializer
 
     def get_queryset(self):
@@ -123,9 +149,9 @@ class AnnouncementUserViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class FilterAnnouncementViewSet(ModelViewSet):
+class FilterAnnouncementViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.filter(pub_status=True)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     serializer_class = AnnouncementSerializer
 
     def get_queryset(self):
@@ -185,9 +211,9 @@ class FilterAnnouncementViewSet(ModelViewSet):
         return queryset
 
 
-class UserFilterViewSet(ModelViewSet):
+class UserFilterViewSet(PsqMixin, ModelViewSet):
     queryset = UserFilter.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     serializer_class = UserFilterSerializer
 
     def get_queryset(self):
