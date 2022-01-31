@@ -13,7 +13,11 @@ class IsBuilder(permissions.BasePermission):
                 return False
 
 
-class IsCreaterFlat(permissions.BasePermission):
+class IsCreatorFlat(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
-        print(obj)
-        return request.user == obj
+        return obj.creator == request.user
+
+
+class IsCreatorAnnouncement(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user

@@ -79,7 +79,7 @@ class FlatSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             user = request.user
-            validated_data['creater'] = user
+            validated_data['creator'] = user
 
         return Flat.objects.create(**validated_data)
 
