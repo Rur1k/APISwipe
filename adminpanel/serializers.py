@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import House, Notary, Flat, Announcement, UserFilter
+from .models import House, Notary, Flat, Announcement, UserFilter, Favorite
 
 from account.models import User
 
@@ -112,4 +112,20 @@ class UserFilterSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             user = request.user
             validated_data['user'] = user
+        return UserFilter.objects.create(**validated_data)
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+    def create(self, validated_data):
+        user = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+            validated_data['user'] = user
+            if Announcement.objects.get(id=request.announcement.id):
+                validated_data['announcement'] = request.announcement.id
         return UserFilter.objects.create(**validated_data)

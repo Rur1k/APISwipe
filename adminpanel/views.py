@@ -232,3 +232,16 @@ class UserFilterViewSet(PsqMixin, ModelViewSet):
         if user:
             queryset = self.queryset.filter(user=user)
         return queryset
+
+
+class FavoriteViewSet(PsqMixin, ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Favorite.objects.none()
+        user = self.request.user
+        if user:
+            queryset = self.queryset.filter(user=user)
+        return queryset

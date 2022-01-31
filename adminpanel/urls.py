@@ -33,6 +33,7 @@ urlpatterns = [
     path('filter/', FilterAnnouncementViewSet.as_view({'get': 'list'})),
     path('filter/my/', UserFilterViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('filter/my/<int:pk>', UserFilterViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
-
+    # Избранное
+    path('favorite/', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'})),
 
 ]

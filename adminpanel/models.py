@@ -99,3 +99,9 @@ class UserFilter(models.Model):
     purpose = models.CharField(max_length=64, null=True, blank=True)
     calculation_option = models.CharField(max_length=64, null=True, blank=True)
     residential_condition = models.CharField(max_length=64, null=True, blank=True)
+
+
+class Favorite(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
