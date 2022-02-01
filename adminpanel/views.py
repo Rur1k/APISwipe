@@ -61,6 +61,33 @@ class FlatViewSet(PsqMixin, ModelViewSet):
     }
 
 
+class FlatReservedViewSet(PsqMixin, ModelViewSet):
+    queryset = Flat.objects.all()
+    serializer_class = FlatSerializer
+
+    psq_rules = {
+        'update': [
+            Rule([IsAdminUser]),
+            Rule([IsCreatorFlat], get_obj=lambda self, obj: self.get_object()),
+        ],
+    }
+
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.reserved:
+            instance.reserved = False
+        else:
+            instance.reserved = True
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class UserViewSet(PsqMixin, ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsAdminUser]

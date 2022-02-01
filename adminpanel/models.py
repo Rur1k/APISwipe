@@ -53,6 +53,7 @@ class Flat(models.Model):
     floor = models.IntegerField(null=True, blank=True)
     riser = models.IntegerField(null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    reserved = models.BooleanField(default=False, blank=True)
 
 
 class Notary(models.Model):

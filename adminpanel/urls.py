@@ -9,6 +9,7 @@ urlpatterns = [
     # Квартиры
     path('flat/', FlatViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('flat/<int:pk>', FlatViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
+    path('flat/reserved/<int:pk>', FlatReservedViewSet.as_view({'patch': 'update'})),
     # Нотариусы
     path('notary/', NotaryViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('notary/<int:pk>', NotaryViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
@@ -36,5 +37,4 @@ urlpatterns = [
     # Избранное
     path('favorite/', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('favorite/<int:pk>', FavoriteViewSet.as_view({'delete': 'destroy'})),
-
 ]
