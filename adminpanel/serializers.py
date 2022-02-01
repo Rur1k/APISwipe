@@ -123,9 +123,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = None
         request = self.context.get('request')
+        print(request.data)
         if request and hasattr(request, 'user'):
             user = request.user
             validated_data['user'] = user
-            if Announcement.objects.get(id=request.announcement.id):
-                validated_data['announcement'] = request.announcement.id
-        return UserFilter.objects.create(**validated_data)
+        return Favorite.objects.create(**validated_data)

@@ -35,5 +35,6 @@ urlpatterns = [
     path('filter/my/<int:pk>', UserFilterViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Избранное
     path('favorite/', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('favorite/<int:pk>', FavoriteViewSet.as_view({'delete': 'destroy'})),
 
 ]

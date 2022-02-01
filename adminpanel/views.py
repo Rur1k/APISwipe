@@ -8,8 +8,8 @@ from rest_framework.viewsets import ModelViewSet
 from drf_psq import PsqMixin, Rule, psq
 
 from .serializers import *
-from .permissions import IsBuilder, IsCreatorFlat, IsCreatorAnnouncement
-from .models import House, Notary, Flat, Announcement, UserFilter
+from .permissions import IsBuilder, IsCreatorFlat
+from .models import House, Notary, Flat, Announcement, UserFilter, Favorite
 from account.models import User
 
 '''АДМИНСКИЕ ПРЕДСТАВЛЕНИЯ'''
@@ -244,4 +244,5 @@ class FavoriteViewSet(PsqMixin, ModelViewSet):
         user = self.request.user
         if user:
             queryset = self.queryset.filter(user=user)
+            print(queryset)
         return queryset

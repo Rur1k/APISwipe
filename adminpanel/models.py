@@ -103,5 +103,5 @@ class UserFilter(models.Model):
 
 class Favorite(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, null=True, blank=True)
