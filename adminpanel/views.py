@@ -121,24 +121,48 @@ class BlacklistViewSet(PsqMixin, ModelViewSet):
 
 
 class AnnouncementViewSet(PsqMixin, ModelViewSet):
-    queryset = Announcement.objects.filter(pub_status=True)
+    queryset = Announcement.objects.all()
     serializer_class = AnnouncementSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = AnnouncementFilter
 
+    psq_rules = {
+        'create': [Rule([IsAuthenticated], AnnouncementRestrictedSerializer)],
+        ('update', 'destroy'): [
+            Rule([IsAdminUser]),
+            Rule(
+                [IsAuthenticated],
+                AnnouncementRestrictedSerializer,
+                lambda self: self.queryset.filter(pub_status=True, user=self.request.user))
+        ],
+        ('list', 'retrieve'): [
+            Rule([IsAdminUser]),
+            Rule([IsAuthenticated],
+                 AnnouncementRestrictedSerializer,
+                 lambda self: self.queryset.filter(pub_status=True)),
+        ],
+    }
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-
+        serializer.save(user=self.request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not request.user.is_staff():
+            instance.pub_status = False
+        instance.save()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AnnouncementUserViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.all()
     permission_classes = [IsAuthenticated]
-    serializer_class = AnnouncementSerializer
+    serializer_class = AnnouncementRestrictedSerializer
 
     def get_queryset(self):
         queryset = Announcement.objects.none()
@@ -146,19 +170,6 @@ class AnnouncementUserViewSet(PsqMixin, ModelViewSet):
         if user:
             queryset = self.queryset.filter(user=user)
         return queryset
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.pub_status = False
-        instance.save()
-        serializer = self.serializer_class(instance)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AnnouncementAdminViewSet(PsqMixin, ModelViewSet):
-    queryset = Announcement.objects.all()
-    permission_classes = [IsAdminUser]
-    serializer_class = AnnouncementSerializer
 
 
 class FavoriteViewSet(PsqMixin, ModelViewSet):

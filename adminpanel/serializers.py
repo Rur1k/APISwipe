@@ -92,14 +92,32 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = '__all__'
 
-    def create(self, validated_data):
-        user = None
-        request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            user = request.user
-            validated_data['user'] = user
-        return Announcement.objects.create(**validated_data)
 
+class AnnouncementRestrictedSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    house = serializers.StringRelatedField()
+
+    class Meta:
+        model = Announcement
+        fields = [
+            'user',
+            'house',
+            'founding_documents',
+            'purpose',
+            'count_rooms',
+            'layout',
+            'residential_condition',
+            'all_square',
+            'balcony',
+            'heating_type',
+            'commission_to_agent',
+            'connection_type',
+            'description',
+            'price',
+            'calculation_option',
+            'maps',
+            'pub_status'
+        ]
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
