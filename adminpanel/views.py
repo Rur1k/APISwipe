@@ -1,4 +1,5 @@
 from django.forms import model_to_dict
+from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -9,7 +10,8 @@ from drf_psq import PsqMixin, Rule, psq
 
 from .serializers import *
 from .permissions import IsBuilder, IsCreatorFlat
-from .models import House, Notary, Flat, Announcement, UserFilter, Favorite
+from .models import House, Notary, Flat, Announcement, Favorite
+from .service import AnnouncementFilter
 from account.models import User
 
 '''АДМИНСКИЕ ПРЕДСТАВЛЕНИЯ'''
@@ -115,35 +117,6 @@ class BlacklistViewSet(PsqMixin, ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-'''ПРЕДСТАВЛЕНИЯ СТРОИТЕЛЯ'''
-
-
-# class BuilderViewSet(PsqMixin, ModelViewSet):
-#     queryset = House.objects.all()
-#     serializer_class = HouseSerializer
-#
-#     psq_rules = {
-#         ('list', 'create', 'retrieve', 'update', 'destroy'): [
-#             Rule([IsAdminUser], serializer_class),
-#             Rule([IsBuilder], serializer_class),
-#         ]
-#     }
-#
-#     def get_queryset(self):
-#         queryset = House.objects.none()
-#         user = self.request.user
-#         if user:
-#             queryset = self.queryset.filter(builder=user)
-#         return queryset
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 '''ПРЕДСТАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯ'''
 
 
@@ -151,6 +124,8 @@ class AnnouncementViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.filter(pub_status=True)
     serializer_class = AnnouncementSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = AnnouncementFilter
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -184,81 +159,6 @@ class AnnouncementAdminViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.all()
     permission_classes = [IsAdminUser]
     serializer_class = AnnouncementSerializer
-
-
-class FilterAnnouncementViewSet(PsqMixin, ModelViewSet):
-    queryset = Announcement.objects.filter(pub_status=True)
-    permission_classes = [IsAuthenticated]
-    serializer_class = AnnouncementSerializer
-
-    def get_queryset(self):
-        queryset = self.queryset
-        data = self.request.data
-        if 'id' in data:
-            obj = UserFilter.objects.filter(id=data.get('id')).first()
-            if obj:
-                data = model_to_dict(obj)
-                if data['user'] == self.request.user.id:
-                    if data['state_house']:
-                        queryset = queryset.filter(house__state=data['state_house'])
-                    if data['district']:
-                        queryset = queryset.filter(house__district=data['district'])
-                    if data['microdistrict']:
-                        queryset = queryset.filter(house__microdistrict=data['microdistrdata'])
-                    if data['count_rooms']:
-                        queryset = queryset.filter(count_rooms=data['count_rooms'])
-                    if data['price_first']:
-                        queryset = queryset.filter(price__gte=data['price_first'])
-                    if data['price_last']:
-                        queryset = queryset.filter(price__lte=data['price_last'])
-                    if data['square_first']:
-                        queryset = queryset.filter(all_square__gte=data['square_first'])
-                    if data['square_last']:
-                        queryset = queryset.filter(all_square__lte=data['square_last'])
-                    if data['purpose']:
-                        queryset = queryset.filter(purpose=data['purpose'])
-                    if data['calculation_option']:
-                        queryset = queryset.filter(calculation_option=data['calculation_option'])
-                    if data['residential_condition']:
-                        queryset = queryset.filter(residential_condition=data['residential_condition'])
-        else:
-            if 'state_house' in data:
-                queryset = queryset.filter(house__state=data.get('state_house'))
-            if 'district' in data:
-                queryset = queryset.filter(house__district=data.get('district'))
-            if 'microdistrict' in data:
-                queryset = queryset.filter(house__microdistrict=data.get('microdistrict'))
-            if 'count_rooms' in data:
-                queryset = queryset.filter(count_rooms=data.get('count_rooms'))
-            if 'price_first' in data:
-                queryset = queryset.filter(price__gte=data.get('price_first'))
-            if 'price_last' in data:
-                queryset = queryset.filter(price__lte=data.get('price_last'))
-            if 'square_first' in data:
-                queryset = queryset.filter(all_square=data.get('square_first'))
-            if 'square_last' in data:
-                queryset = queryset.filter(all_square=data.get('square_last'))
-            if 'purpose' in data:
-                queryset = queryset.filter(purpose=data.get('purpose'))
-            if 'calculation_option' in data:
-                queryset = queryset.filter(calculation_option=data.get('calculation_option'))
-            if 'residential_condition' in data:
-                queryset = queryset.filter(residential_condition=data.get('residential_condition'))
-
-        return queryset
-
-
-class UserFilterViewSet(PsqMixin, ModelViewSet):
-    queryset = UserFilter.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserFilterSerializer
-
-    def get_queryset(self):
-        queryset = UserFilter.objects.none()
-        user = self.request.user
-        if user:
-            queryset = self.queryset.filter(user=user)
-        return queryset
 
 
 class FavoriteViewSet(PsqMixin, ModelViewSet):

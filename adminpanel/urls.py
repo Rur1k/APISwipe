@@ -31,9 +31,9 @@ urlpatterns = [
     path('announcement/moderation/<int:pk>',
          AnnouncementAdminViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Фильтры
-    path('filter/', FilterAnnouncementViewSet.as_view({'get': 'list'})),
-    path('filter/my/', UserFilterViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('filter/my/<int:pk>', UserFilterViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
+    # path('filter/', FilterAnnouncementViewSet.as_view({'get': 'list'})),
+    # path('filter/my/', UserFilterViewSet.as_view({'get': 'list', 'post': 'create'})),
+    # path('filter/my/<int:pk>', UserFilterViewSet.as_view({'get': 'retrieve', 'patch': 'update', 'delete': 'destroy'})),
     # Избранное
     path('favorite/', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('favorite/<int:pk>', FavoriteViewSet.as_view({'delete': 'destroy'})),
