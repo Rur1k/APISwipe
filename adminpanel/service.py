@@ -10,6 +10,10 @@ class AnnouncementFilter(filters.FilterSet):
     class Meta:
         model = Announcement
         fields = [
+            'house__type_house'
+            'house__district',
+            'house__microdistrict',
+            'house_state'
             'count_rooms',
             'price',
             'all_square',
