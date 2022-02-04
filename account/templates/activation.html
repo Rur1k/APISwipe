@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение e-mail</title>
+</head>
+<body>
+    <form method="post" action="/auth/users/activation/">
+        <input name="uid" value="{{ui}}">
+        <input name="token" value="{{token}}">
+        <button type="submit">Подтвердить email</button>
+    </form>
+</body>
+</html>

@@ -273,3 +273,9 @@ class FavoriteViewSet(PsqMixin, ModelViewSet):
             queryset = self.queryset.filter(user=user)
             print(queryset)
         return queryset
+
+
+class GalleryViewSet(ModelViewSet):
+    queryset = GalleryAnnouncement.objects.all()
+    serializer_class = GalleryAnnouncementSerializer
+    permission_classes = [IsAuthenticated]

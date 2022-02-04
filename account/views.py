@@ -1,3 +1,5 @@
+from django.shortcuts import render
+
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,7 +11,7 @@ from .models import User
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
 
     # def get_queryset(self):
@@ -34,6 +36,5 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
+def activation_email(request, ui, token):
+    return render(request, 'activation.html', {'ui': ui, 'token': token})

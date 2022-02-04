@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import House, Notary, Flat, Announcement, UserFilter, Favorite
+from .models import House, Notary, Flat, Announcement, UserFilter, Favorite, GalleryAnnouncement
 
 from account.models import User
 
@@ -128,3 +128,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
             user = request.user
             validated_data['user'] = user
         return Favorite.objects.create(**validated_data)
+
+
+class GalleryAnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GalleryAnnouncement
+        fields = '__all__'

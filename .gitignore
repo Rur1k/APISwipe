@@ -14,6 +14,13 @@ pip-selfcheck.json
 
 .env
 
+# Docker
+Dockerfile
+docker-compose.yml
+entrypoint.sh
+docker
+static
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

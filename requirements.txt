@@ -1,4 +1,4 @@
-Django~=2.2.4
+Django==3.2.4
 django-rest-framework
 djangorestframework
 markdown
@@ -10,3 +10,5 @@ djangorestframework_simplejwt~=4.3.0
 python-dotenv
 drf-spectacular
 drf-psq
+gunicorn==20.1.0
+Pillow
