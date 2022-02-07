@@ -84,9 +84,16 @@ class FlatSerializer(serializers.ModelSerializer):
         return Flat.objects.create(**validated_data)
 
 
+class GalleryAnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GalleryAnnouncement
+        fields = '__all__'
+
+
 class AnnouncementSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     house = serializers.StringRelatedField()
+    images = GalleryAnnouncementSerializer(many=True, read_only=True)
 
     class Meta:
         model = Announcement
@@ -96,6 +103,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class AnnouncementRestrictedSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
     house = serializers.StringRelatedField()
+    images = GalleryAnnouncementSerializer(many=True, read_only=True)
 
     class Meta:
         model = Announcement
@@ -116,7 +124,8 @@ class AnnouncementRestrictedSerializer(serializers.ModelSerializer):
             'price',
             'calculation_option',
             'maps',
-            'pub_status'
+            'pub_status',
+            'images',
         ]
 
 
@@ -135,7 +144,3 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return Favorite.objects.create(**validated_data)
 
 
-class GalleryAnnouncementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GalleryAnnouncement
-        fields = '__all__'

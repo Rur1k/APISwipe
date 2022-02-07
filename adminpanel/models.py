@@ -94,5 +94,5 @@ class Favorite(models.Model):
 class GalleryAnnouncement(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     image = models.ImageField(upload_to='static/img/announcement', null=True, blank=True)
-    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, null=True, blank=True)
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, null=True, blank=True, related_name='images')
 
