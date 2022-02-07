@@ -2,6 +2,7 @@ from django.forms import model_to_dict
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -9,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet
 from drf_psq import PsqMixin, Rule, psq
 
 from .serializers import *
-from .permissions import IsBuilder, IsCreatorFlat
+from .permissions import IsBuilder, IsCreatorFlat, IsCreatorAnnouncement
 from .models import House, Notary, Flat, Announcement, Favorite
 from .service import AnnouncementFilter
 from account.models import User
@@ -124,6 +125,7 @@ class AnnouncementViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.all()
     serializer_class = AnnouncementSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, )
     filter_backends = (DjangoFilterBackend,)
     filterset_class = AnnouncementFilter
 
@@ -162,6 +164,7 @@ class AnnouncementViewSet(PsqMixin, ModelViewSet):
 class AnnouncementUserViewSet(PsqMixin, ModelViewSet):
     queryset = Announcement.objects.all()
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, )
     serializer_class = AnnouncementRestrictedSerializer
 
     def get_queryset(self):
@@ -186,7 +189,18 @@ class FavoriteViewSet(PsqMixin, ModelViewSet):
         return queryset
 
 
-class GalleryViewSet(ModelViewSet):
+class GalleryViewSet(PsqMixin, ModelViewSet):
     queryset = GalleryAnnouncement.objects.all()
     serializer_class = GalleryAnnouncementSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
+    parser_classes = (MultiPartParser, )
+
+    psq_rules = {
+        'create': [
+            Rule([IsAdminUser]),
+            Rule([IsCreatorAnnouncement]),
+        ],
+    }
+
+
+

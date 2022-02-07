@@ -23,9 +23,10 @@ urlpatterns = [
     # Объявления пользователя
     path('announcement/my/', AnnouncementUserViewSet.as_view({'get': 'list'})),
     path('announcement/my/<int:pk>', AnnouncementUserViewSet.as_view({'get': 'retrieve'})),
+    # Галерея
+    path('announcement/img/', GalleryViewSet.as_view({'post': 'create'})),
     # Избранное
     path('favorite/', FavoriteViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('favorite/<int:pk>', FavoriteViewSet.as_view({'delete': 'destroy'})),
-    # Галерея
-    path('gallery/', GalleryViewSet.as_view({'get': 'list'})),
+
 ]

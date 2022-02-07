@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from .models import Announcement
 
 
 class IsBuilder(permissions.BasePermission):
@@ -18,6 +19,8 @@ class IsCreatorFlat(permissions.IsAuthenticated):
         return obj.creator == request.user
 
 
-class IsCreatorAnnouncement(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        return obj.user == request.user
+class IsCreatorAnnouncement(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated and request.data.get('announcement'):
+            if Announcement.objects.filter(user=request.user, id=request.data.get('announcement')):
+                return True
