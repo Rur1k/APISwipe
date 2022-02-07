@@ -1,5 +1,5 @@
-from django.forms import model_to_dict
-from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
@@ -126,7 +126,7 @@ class AnnouncementViewSet(PsqMixin, ModelViewSet):
     serializer_class = AnnouncementSerializer
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, )
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = AnnouncementFilter
 
     psq_rules = {
