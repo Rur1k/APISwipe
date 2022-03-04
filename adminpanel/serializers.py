@@ -51,7 +51,8 @@ class NotarySerializer(serializers.ModelSerializer):
 
 
 class FlatSerializer(serializers.ModelSerializer):
-    # house = serializers.StringRelatedField()
+    house = serializers.StringRelatedField()
+    creator = serializers.StringRelatedField()
 
     class Meta:
         model = Flat
